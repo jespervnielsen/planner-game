@@ -43,6 +43,11 @@ export function initGame(seed: string, mode: 'daily' | 'random'): GameState {
 }
 
 export function selectCard(state: GameState, cardId: string): GameState {
+  // Allow deselecting the currently selected card
+  if (state.phase === 'placing' && state.selectedCard === cardId) {
+    return { ...state, phase: 'picking', selectedCard: null };
+  }
+
   if (state.phase !== 'picking') return state;
   if (!state.hand || !state.hand.includes(cardId)) return state;
 
@@ -125,7 +130,7 @@ export function calculateScore(board: Board, allCards: Card[]): ScoreResult {
       }
 
       totalScore += cardScore;
-      steps.push({ cardId, cardScore, bonusTriggered, tokensAfter: { ...tokens }, tokensBefore, bonusMissedBy });
+      steps.push({ cardId, cardScore, bonusTriggered, tokensAfter: { ...tokens }, tokensBefore, bonusMissedBy, dayName: day });
     }
   }
 

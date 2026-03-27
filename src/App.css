@@ -183,9 +183,13 @@ body {
   box-shadow: 0 0 0 2px rgba(99,102,241,0.25);
 }
 .day-column.can-place:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(99,102,241,0.4);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(99,102,241,0.5);
   border-color: var(--accent-hover);
+}
+.day-column.can-place:active {
+  transform: translateY(0) scale(0.98);
+  transition: transform 0.08s;
 }
 
 .day-header {
@@ -329,11 +333,32 @@ body {
   animation: scorePopIn 0.3s ease;
 }
 .card-score-overlay.bonus { color: #fbbf24; }
+.card-score-overlay.active-step {
+  background: rgba(99, 102, 241, 0.25);
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.5);
+}
 .bonus-tag { margin-left: 4px; font-size: 0.9rem; }
 
 @keyframes scorePopIn {
   from { opacity: 0; transform: scale(0.6); }
   to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes cardLand {
+  0%   { opacity: 0; transform: translateY(-12px) scale(0.92); }
+  60%  { transform: translateY(2px) scale(1.02); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.card-view.just-placed {
+  animation: cardLand 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes scoreLand {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
 }
 
 /* ── Card Picker (footer) ── */
@@ -484,6 +509,7 @@ body {
 }
 .breakdown-item:last-child { border-bottom: none; }
 .breakdown-item.has-bonus { background: rgba(251,191,36,0.07); }
+.bi-day { color: var(--text-muted); font-size: 0.7rem; margin-right: 4px; min-width: 28px; display: inline-block; }
 .bi-title { color: var(--text-muted); }
 .bi-score { font-weight: 700; }
 .bi-bonus { color: #fbbf24; }
@@ -570,11 +596,15 @@ body {
 .slot-number {
   position: absolute;
   top: 3px;
-  right: 4px;
-  font-size: 0.6rem;
-  font-weight: 700;
-  color: var(--text-muted);
-  opacity: 0.6;
+  right: 3px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--bg);
+  background: var(--border);
+  border-radius: 3px;
+  padding: 0 3px;
+  line-height: 1.4;
+  opacity: 0.85;
   pointer-events: none;
 }
 
@@ -597,3 +627,14 @@ body {
   transition: border-color 0.15s, color 0.15s;
 }
 .btn-share:hover { border-color: var(--accent); color: var(--text); }
+
+/* ── Full column state ── */
+.day-column--full {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.day-column--full .day-header::after {
+  content: ' (full)';
+  font-size: 0.7em;
+  color: var(--text-muted);
+}
