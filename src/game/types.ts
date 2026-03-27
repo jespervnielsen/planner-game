@@ -5,6 +5,7 @@ export type Card = {
   title: string;
   basePoints: number;
   tokens: TokenType[];
+  costs?: TokenType[];
   bonus?: {
     required: {
       type: TokenType;

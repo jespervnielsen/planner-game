@@ -70,37 +70,83 @@ body {
   color: var(--text-muted);
 }
 
-/* ── Token Lane ── */
+/* ── Token Lane (track) ── */
 .token-lane {
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  gap: 6px;
   padding: 8px 0;
-  flex-wrap: wrap;
 }
 
-.token-pill {
+.token-row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  background: var(--surface);
-  border: 2px solid;
-  border-radius: 99px;
-  padding: 4px 10px 4px 8px;
-  font-size: 0.82rem;
-  transition: transform 0.15s;
+  gap: 8px;
 }
 
-.token-icon { font-size: 1rem; }
-.token-label { font-weight: 600; }
+.token-icon { font-size: 1rem; flex-shrink: 0; }
+.token-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  width: 48px;
+  flex-shrink: 0;
+}
+
+.token-track {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.track-cell {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid;
+  background: transparent;
+  flex-shrink: 0;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.track-cell.filled {
+  transform: scale(1.05);
+}
+
+/* Threshold not yet met — gold pulse ring */
+.track-cell.threshold-goal {
+  border-color: #fbbf24 !important;
+  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.45);
+  animation: thresholdPulse 1.4s ease-in-out infinite;
+}
+
+/* Threshold already met — bright success glow */
+.track-cell.threshold-met {
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.6);
+  outline: 2px solid #fbbf24;
+}
+
+@keyframes thresholdPulse {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.45); }
+  50%       { box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.2); }
+}
+
+.track-overflow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-left: 2px;
+}
+
 .token-count {
   color: #fff;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   border-radius: 99px;
   padding: 1px 7px;
-  min-width: 24px;
+  min-width: 26px;
   text-align: center;
-  transition: transform 0.2s, background 0.2s;
+  flex-shrink: 0;
+  transition: transform 0.2s;
 }
 
 /* ── Board ── */
@@ -223,6 +269,13 @@ body {
   color: #fff;
 }
 .card-view:not(.compact) .card-token-badge { font-size: 0.8rem; padding: 2px 6px; }
+
+/* Cost badge: outlined, no fill */
+.card-token-badge.cost {
+  background: transparent;
+  border: 1px solid;
+  font-weight: 700;
+}
 
 .card-points-row {
   display: flex;

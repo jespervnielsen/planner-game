@@ -4,10 +4,37 @@ import { Board } from './components/Board';
 import { CardPicker } from './components/CardPicker';
 import { ScoreScreen } from './components/ScoreScreen';
 import { ALL_CARDS } from './game/cards';
-import { TokenState, Card } from './game/types';
+import { computeBoardTokens } from './game/engine';
+import { TokenState, TokenType, Card } from './game/types';
 import './App.css';
 
 const EMPTY_TOKENS: TokenState = { work: 0, fitness: 0, social: 0, rest: 0 };
+
+function getThresholds(
+  phase: string,
+  selectedCard: string | null,
+  hand: [string, string] | null,
+): Partial<Record<TokenType, number>> {
+  const relevantIds: string[] = [];
+  if (phase === 'placing' && selectedCard) {
+    relevantIds.push(selectedCard);
+  } else if (phase === 'picking' && hand) {
+    relevantIds.push(...hand);
+  }
+
+  const result: Partial<Record<TokenType, number>> = {};
+  for (const id of relevantIds) {
+    const card = ALL_CARDS.find((c: Card) => c.id === id);
+    if (card?.bonus) {
+      const { type, count } = card.bonus.required;
+      const existing = result[type];
+      if (existing === undefined || count < existing) {
+        result[type] = count;
+      }
+    }
+  }
+  return result;
+}
 
 function App() {
   const { state, selectCard, placeCard, restartGame } = useGameState();
@@ -24,14 +51,16 @@ function App() {
       const steps = state.scoreResult.steps;
       return steps.length > 0 ? steps[steps.length - 1].tokensAfter : EMPTY_TOKENS;
     }
-    return EMPTY_TOKENS;
+    return computeBoardTokens(state.board, ALL_CARDS);
   })();
+
+  const thresholds = getThresholds(state.phase, state.selectedCard, state.hand);
 
   const handCards: [Card, Card] | null =
     state.hand
       ? [
-          ALL_CARDS.find(c => c.id === state.hand![0])!,
-          ALL_CARDS.find(c => c.id === state.hand![1])!,
+          ALL_CARDS.find((c: Card) => c.id === state.hand![0])!,
+          ALL_CARDS.find((c: Card) => c.id === state.hand![1])!,
         ]
       : null;
 
@@ -49,7 +78,7 @@ function App() {
         </div>
       </header>
 
-      <TokenLane tokens={currentTokens} />
+      <TokenLane tokens={currentTokens} thresholds={thresholds} />
 
       {state.phase === 'scoring' && (
         <div className="scoring-banner">⏳ Calculating score…</div>
