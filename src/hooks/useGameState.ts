@@ -28,19 +28,26 @@ export function useGameState() {
     if (state.phase !== 'scoring') return;
     if (!state.scoreResult) return;
 
+    const BONUS_ANIMATION_DELAY_MS = 750;
+    const REGULAR_ANIMATION_DELAY_MS = 350;
+    const FINAL_PHASE_DELAY_MS = 1000;
+
     const totalSteps = state.scoreResult.steps.length;
     const nextStep = state.scoreAnimStep + 1;
 
     if (nextStep >= totalSteps) {
       const timer = setTimeout(() => {
         setState(prev => ({ ...prev, phase: 'done' }));
-      }, 800);
+      }, FINAL_PHASE_DELAY_MS);
       return () => clearTimeout(timer);
     }
 
+    const isBonus = state.scoreResult.steps[nextStep]?.bonusTriggered;
+    const delay = isBonus ? BONUS_ANIMATION_DELAY_MS : REGULAR_ANIMATION_DELAY_MS;
+
     const timer = setTimeout(() => {
       setState(prev => advanceScoreAnimation(prev));
-    }, 400);
+    }, delay);
 
     return () => clearTimeout(timer);
   }, [state.phase, state.scoreAnimStep, state.scoreResult]);

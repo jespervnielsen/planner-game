@@ -10,9 +10,10 @@ interface BoardProps {
   onPlaceCard?: (day: DayName) => void;
   scoreResult?: ScoreResult | null;
   scoreAnimStep?: number;
+  bonusFeasibilityByDay?: Partial<Record<DayName, 'will-trigger' | 'wont-trigger'>>;
 }
 
-export const Board: React.FC<BoardProps> = ({ board, canPlace, onPlaceCard, scoreResult, scoreAnimStep }) => {
+export const Board: React.FC<BoardProps> = ({ board, canPlace, onPlaceCard, scoreResult, scoreAnimStep, bonusFeasibilityByDay }) => {
   const scoringOrder: { day: DayName; cardIdx: number }[] = [];
   for (const day of DAYS) {
     for (let i = 0; i < board[day].length; i++) {
@@ -48,6 +49,7 @@ export const Board: React.FC<BoardProps> = ({ board, canPlace, onPlaceCard, scor
           onClick={() => onPlaceCard?.(day)}
           scoreSteps={getScoreStepsForDay(day)}
           slotNumbers={resolutionMap[day] ?? []}
+          bonusFeasibility={bonusFeasibilityByDay?.[day]}
         />
       ))}
     </div>

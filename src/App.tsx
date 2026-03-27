@@ -4,11 +4,55 @@ import { Board } from './components/Board';
 import { CardPicker } from './components/CardPicker';
 import { ScoreScreen } from './components/ScoreScreen';
 import { ALL_CARDS } from './game/cards';
-import { computeBoardTokens } from './game/engine';
-import { TokenState, TokenType, Card } from './game/types';
+import { computeBoardTokens, DAYS } from './game/engine';
+import { TokenState, TokenType, Card, DayName, Board as BoardType } from './game/types';
 import './App.css';
 
 const EMPTY_TOKENS: TokenState = { work: 0, fitness: 0, social: 0, rest: 0 };
+
+/**
+ * Compute the tokens accumulated from all cards that resolve BEFORE
+ * a card placed at `(day, board[day].length)` in the current board.
+ */
+function computeTokensAtSlot(board: BoardType, day: DayName, allCards: Card[]): TokenState {
+  const tokens: TokenState = { work: 0, fitness: 0, social: 0, rest: 0 };
+  const newSlot = board[day].length;
+  const dayIndex = DAYS.indexOf(day);
+  for (const d of DAYS) {
+    const dIndex = DAYS.indexOf(d);
+    const cardIds = board[d];
+    for (let i = 0; i < cardIds.length; i++) {
+      if (dIndex < dayIndex || (d === day && i < newSlot)) {
+        const card = allCards.find(c => c.id === cardIds[i]);
+        if (!card) continue;
+        for (const token of card.tokens) tokens[token]++;
+        if (card.costs) {
+          for (const cost of card.costs) tokens[cost] = Math.max(0, tokens[cost] - 1);
+        }
+      }
+    }
+  }
+  return tokens;
+}
+
+function getBonusFeasibilityByDay(
+  selectedCardId: string | null,
+  board: BoardType,
+  allCards: Card[],
+): Partial<Record<DayName, 'will-trigger' | 'wont-trigger'>> {
+  if (!selectedCardId) return {};
+  const card = allCards.find(c => c.id === selectedCardId);
+  if (!card?.bonus) return {};
+
+  const result: Partial<Record<DayName, 'will-trigger' | 'wont-trigger'>> = {};
+  for (const day of DAYS) {
+    if (board[day].length >= 3) continue;
+    const tokens = computeTokensAtSlot(board, day, allCards);
+    const { type, count } = card.bonus.required;
+    result[day] = tokens[type] >= count ? 'will-trigger' : 'wont-trigger';
+  }
+  return result;
+}
 
 function getThresholds(
   phase: string,
@@ -55,6 +99,11 @@ function App() {
   })();
 
   const thresholds = getThresholds(state.phase, state.selectedCard, state.hand);
+
+  const bonusFeasibilityByDay =
+    state.phase === 'placing'
+      ? getBonusFeasibilityByDay(state.selectedCard, state.board, ALL_CARDS)
+      : {};
 
   const handCards: [Card, Card] | null =
     state.hand
@@ -107,6 +156,7 @@ function App() {
           onPlaceCard={placeCard}
           scoreResult={state.scoreResult}
           scoreAnimStep={state.scoreAnimStep}
+          bonusFeasibilityByDay={bonusFeasibilityByDay}
         />
       </main>
 

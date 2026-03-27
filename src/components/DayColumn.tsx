@@ -9,6 +9,7 @@ interface DayColumnProps {
   onClick?: () => void;
   scoreSteps?: (ScoreStep | null)[];
   slotNumbers?: number[];
+  bonusFeasibility?: 'will-trigger' | 'wont-trigger';
 }
 
 const DAY_LABELS: Record<DayName, string> = {
@@ -16,13 +17,20 @@ const DAY_LABELS: Record<DayName, string> = {
   thursday: 'Thu', friday: 'Fri', saturday: 'Sat',
 };
 
-export const DayColumn: React.FC<DayColumnProps> = ({ day, cards, isTarget, canPlace, onClick, scoreSteps, slotNumbers }) => {
+export const DayColumn: React.FC<DayColumnProps> = ({ day, cards, isTarget, canPlace, onClick, scoreSteps, slotNumbers, bonusFeasibility }) => {
   return (
     <div
       className={`day-column${isTarget ? ' target' : ''}${canPlace ? ' can-place' : ''}`}
       onClick={canPlace ? onClick : undefined}
     >
-      <div className="day-header">{DAY_LABELS[day]}</div>
+      <div className="day-header">
+        {DAY_LABELS[day]}
+        {canPlace && bonusFeasibility && (
+          <span className={`bonus-signal ${bonusFeasibility}`}>
+            {bonusFeasibility === 'will-trigger' ? '✨' : '·'}
+          </span>
+        )}
+      </div>
       <div className="day-cards">
         {cards.map((card, i) => (
           <CardView

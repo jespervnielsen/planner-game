@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { ScoreResult } from '../game/types';
 import { TOKEN_CONFIG } from './TokenLane';
 import { ALL_CARDS } from '../game/cards';
@@ -39,6 +40,21 @@ export const ScoreScreen: React.FC<ScoreScreenProps> = ({ scoreResult, onPlayAga
   }, 0);
   const baseTotal = totalScore - bonusPoints;
   const missedCount = steps.filter(s => s.bonusMissedBy !== undefined).length;
+  const nearMisses = steps.filter(s => s.bonusMissedBy !== undefined);
+
+  const [displayScore, setDisplayScore] = useState(0);
+  useEffect(() => {
+    const SCORE_ANIMATION_DURATION_MS = 900;
+    const SCORE_ANIMATION_STEPS = 40;
+    if (totalScore === 0) { setDisplayScore(0); return; }
+    let count = 0;
+    const id = setInterval(() => {
+      count++;
+      setDisplayScore(count >= SCORE_ANIMATION_STEPS ? totalScore : Math.round((totalScore / SCORE_ANIMATION_STEPS) * count));
+      if (count >= SCORE_ANIMATION_STEPS) clearInterval(id);
+    }, SCORE_ANIMATION_DURATION_MS / SCORE_ANIMATION_STEPS);
+    return () => clearInterval(id);
+  }, [totalScore]);
 
   const handleShare = () => {
     const date = mode === 'daily' ? seed : new Date().toISOString().slice(0, 10);
@@ -51,7 +67,7 @@ export const ScoreScreen: React.FC<ScoreScreenProps> = ({ scoreResult, onPlayAga
     <div className="score-screen">
       <div className="score-header">
         <h2>Week Complete!</h2>
-        <div className="score-total">{totalScore}</div>
+        <div className="score-total">{displayScore}</div>
         <div className="score-rating">{getRating(totalScore)}</div>
         <div className="score-split">Base: {baseTotal} + Bonus: {bonusPoints} = {totalScore}</div>
       </div>
@@ -70,6 +86,22 @@ export const ScoreScreen: React.FC<ScoreScreenProps> = ({ scoreResult, onPlayAga
           <span>✨ {bonusCount} bonus{bonusCount !== 1 ? 'es' : ''} triggered (+{bonusPoints}pt)</span>
           {missedCount > 0 && <span className="missed-stat">💔 {missedCount} missed</span>}
         </div>
+
+        {nearMisses.length > 0 && (
+          <div className="near-miss-section">
+            <h4 className="near-miss-title">💔 Near Misses</h4>
+            {nearMisses.map((step, i) => {
+              const card = ALL_CARDS.find(c => c.id === step.cardId)!;
+              const tokenIcon = card.bonus ? TOKEN_CONFIG[card.bonus.required.type].icon : '';
+              return (
+                <div key={i} className="near-miss-item">
+                  <span className="bi-title">{card.title}</span>
+                  <span className="near-miss-detail">{step.bonusMissedBy} more {tokenIcon} needed</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
         <h3>Score Breakdown</h3>
         <div className="breakdown-list">
           {steps.map((step, i) => {

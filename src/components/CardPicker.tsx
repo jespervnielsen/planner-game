@@ -17,6 +17,7 @@ export const CardPicker: React.FC<CardPickerProps> = ({ cards, selectedId, onSel
             key={card.id}
             card={card}
             selected={card.id === selectedId}
+            discarded={selectedId !== null && card.id !== selectedId}
             onClick={() => onSelect(card.id)}
           />
         ))}

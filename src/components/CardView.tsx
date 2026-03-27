@@ -4,6 +4,7 @@ import { TOKEN_CONFIG } from './TokenLane';
 interface CardViewProps {
   card: Card;
   selected?: boolean;
+  discarded?: boolean;
   onClick?: () => void;
   compact?: boolean;
   scoreStep?: { cardScore: number; bonusTriggered: boolean } | null;
@@ -21,13 +22,14 @@ function groupTokens(tokens: TokenType[]): { type: TokenType; count: number }[] 
   return order.map(t => ({ type: t, count: counts[t]! }));
 }
 
-export const CardView: React.FC<CardViewProps> = ({ card, selected, onClick, compact, scoreStep, slotNumber }) => {
+export const CardView: React.FC<CardViewProps> = ({ card, selected, discarded, onClick, compact, scoreStep, slotNumber }) => {
   const gainGroups = groupTokens(card.tokens);
   const costGroups = card.costs ? groupTokens(card.costs) : [];
+  const isRisky = card.basePoints === 0;
 
   return (
     <div
-      className={`card-view${selected ? ' selected' : ''}${onClick ? ' clickable' : ''}${compact ? ' compact' : ''}`}
+      className={`card-view${selected ? ' selected' : ''}${discarded ? ' discarded' : ''}${onClick ? ' clickable' : ''}${compact ? ' compact' : ''}${isRisky ? ' risky' : ''}`}
       onClick={onClick}
     >
       <div className="card-title">{card.title}</div>
@@ -46,7 +48,8 @@ export const CardView: React.FC<CardViewProps> = ({ card, selected, onClick, com
       </div>
 
       <div className="card-points-row">
-        <span className="card-base-points">{card.basePoints}pt</span>
+        <span className={`card-base-points${isRisky ? ' risky-pts' : ''}`}>{card.basePoints}pt</span>
+        {isRisky && <span className="risky-badge">⚡ bonus only</span>}
       </div>
 
       {card.bonus && (
