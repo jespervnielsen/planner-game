@@ -22,6 +22,11 @@ export const CardView: React.FC<CardViewProps> = ({ card, selected, onClick, com
             {TOKEN_CONFIG[t].icon}
           </span>
         ))}
+        {card.costs && card.costs.map((t, i) => (
+          <span key={`cost-${i}`} className="card-token-badge cost" style={{ borderColor: TOKEN_CONFIG[t].color, color: TOKEN_CONFIG[t].color }}>
+            −{TOKEN_CONFIG[t].icon}
+          </span>
+        ))}
       </div>
       <div className="card-points-row">
         <span className="card-base-points">{card.basePoints}pt</span>

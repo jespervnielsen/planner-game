@@ -2,7 +2,7 @@ import { GameState, DayName, Board, Card, TokenState, ScoreResult, ScoreStep } f
 import { ALL_CARDS } from './cards';
 import { createRng, rngShuffle } from './rng';
 
-const DAYS: DayName[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+export const DAYS: DayName[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 const TOTAL_CARDS = 12;
 
 function emptyBoard(): Board {
@@ -114,12 +114,38 @@ export function calculateScore(board: Board, allCards: Card[]): ScoreResult {
         tokens[token]++;
       }
 
+      if (card.costs) {
+        for (const cost of card.costs) {
+          tokens[cost] = Math.max(0, tokens[cost] - 1);
+        }
+      }
+
       totalScore += cardScore;
       steps.push({ cardId, cardScore, bonusTriggered, tokensAfter: { ...tokens } });
     }
   }
 
   return { totalScore, steps };
+}
+
+/** Compute the net token state from all cards currently on the board. */
+export function computeBoardTokens(board: Board, allCards: Card[]): TokenState {
+  const tokens: TokenState = { work: 0, fitness: 0, social: 0, rest: 0 };
+  for (const day of DAYS) {
+    for (const cardId of board[day]) {
+      const card = allCards.find(c => c.id === cardId);
+      if (!card) continue;
+      for (const token of card.tokens) {
+        tokens[token]++;
+      }
+      if (card.costs) {
+        for (const cost of card.costs) {
+          tokens[cost] = Math.max(0, tokens[cost] - 1);
+        }
+      }
+    }
+  }
+  return tokens;
 }
 
 export function advanceScoreAnimation(state: GameState): GameState {

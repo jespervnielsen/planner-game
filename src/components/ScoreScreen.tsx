@@ -10,10 +10,10 @@ interface ScoreScreenProps {
 }
 
 function getRating(score: number): string {
-  if (score >= 60) return '🏆 Perfect!';
-  if (score >= 45) return '⭐⭐⭐ Excellent!';
-  if (score >= 30) return '⭐⭐ Good!';
-  if (score >= 15) return '⭐ Keep trying!';
+  if (score >= 70) return '🏆 Perfect!';
+  if (score >= 55) return '⭐⭐⭐ Excellent!';
+  if (score >= 40) return '⭐⭐ Good!';
+  if (score >= 25) return '⭐ Keep trying!';
   return '📝 Needs work';
 }
 
