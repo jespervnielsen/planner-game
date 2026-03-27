@@ -287,12 +287,32 @@ body {
   font-weight: 700;
   color: var(--text-muted);
 }
-.card-bonus-hint {
-  font-size: 0.72rem;
-  color: #fbbf24;
-  cursor: help;
-}
 .card-view:not(.compact) .card-base-points { font-size: 0.9rem; }
+
+/* Bonus requirement row */
+.card-bonus-row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 3px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.card-view:not(.compact) .card-bonus-row { font-size: 0.82rem; }
+.card-bonus-need {
+  background: rgba(251, 191, 36, 0.15);
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  border-radius: 4px;
+  padding: 1px 4px;
+  color: #fbbf24;
+}
+.card-bonus-arrow {
+  color: var(--text-muted);
+  font-size: 0.65rem;
+}
+.card-bonus-reward {
+  color: #fbbf24;
+}
 
 /* Score overlay on card */
 .card-score-overlay {
