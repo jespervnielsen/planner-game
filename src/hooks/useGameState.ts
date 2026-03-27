@@ -60,5 +60,16 @@ export function useGameState() {
     setState(initGame(seed, 'random'));
   }, []);
 
-  return { state, selectCard, placeCard, restartGame };
+  const skipScoring = useCallback(() => {
+    setState(prev => {
+      if (prev.phase !== 'scoring' || !prev.scoreResult) return prev;
+      return {
+        ...prev,
+        phase: 'done',
+        scoreAnimStep: prev.scoreResult.steps.length - 1,
+      };
+    });
+  }, []);
+
+  return { state, selectCard, placeCard, restartGame, skipScoring };
 }

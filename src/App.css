@@ -372,14 +372,30 @@ body {
 }
 
 /* ── Scoring Banner ── */
+.scoring-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 6px;
+}
 .scoring-banner {
   text-align: center;
   font-size: 1rem;
   font-weight: 600;
   color: #fbbf24;
-  padding: 6px;
   animation: pulse 1s ease-in-out infinite;
 }
+.btn-skip {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  padding: 3px 10px;
+  cursor: pointer;
+}
+.btn-skip:hover { border-color: var(--accent); color: var(--text); }
 
 /* ── Score Screen Overlay ── */
 .score-overlay {
@@ -505,3 +521,79 @@ body {
   color: var(--text-muted);
   text-align: center;
 }
+
+/* ── How to Play ── */
+.how-to-play {
+  margin: 6px 0 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
+.how-to-play summary {
+  cursor: pointer;
+  color: var(--text-muted);
+  font-weight: 600;
+  user-select: none;
+}
+.how-to-play summary:hover { color: var(--text); }
+.how-to-play-body {
+  padding: 8px 0 4px 4px;
+  color: var(--text-muted);
+}
+.how-to-play-body ul {
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1.5;
+}
+.how-to-play-body strong { color: var(--text); }
+
+/* ── Score summary stats ── */
+.score-summary-stats {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.missed-stat { color: #ef4444; }
+
+/* ── Missed bonus in breakdown ── */
+.bi-missed { color: #ef4444; font-size: 0.78rem; margin-left: 4px; }
+
+/* ── Resolution order slot number ── */
+.slot-number {
+  position: absolute;
+  top: 3px;
+  right: 4px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ── Score split line ── */
+.score-split {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ── Share button ── */
+.btn-share {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.btn-share:hover { border-color: var(--accent); color: var(--text); }

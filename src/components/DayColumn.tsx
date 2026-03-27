@@ -8,6 +8,7 @@ interface DayColumnProps {
   canPlace?: boolean;
   onClick?: () => void;
   scoreSteps?: (ScoreStep | null)[];
+  slotNumbers?: number[];
 }
 
 const DAY_LABELS: Record<DayName, string> = {
@@ -15,7 +16,7 @@ const DAY_LABELS: Record<DayName, string> = {
   thursday: 'Thu', friday: 'Fri', saturday: 'Sat',
 };
 
-export const DayColumn: React.FC<DayColumnProps> = ({ day, cards, isTarget, canPlace, onClick, scoreSteps }) => {
+export const DayColumn: React.FC<DayColumnProps> = ({ day, cards, isTarget, canPlace, onClick, scoreSteps, slotNumbers }) => {
   return (
     <div
       className={`day-column${isTarget ? ' target' : ''}${canPlace ? ' can-place' : ''}`}
@@ -29,6 +30,7 @@ export const DayColumn: React.FC<DayColumnProps> = ({ day, cards, isTarget, canP
             card={card}
             compact
             scoreStep={scoreSteps ? scoreSteps[i] : null}
+            slotNumber={slotNumbers ? slotNumbers[i] : null}
           />
         ))}
         {Array.from({ length: 3 - cards.length }).map((_, i) => (

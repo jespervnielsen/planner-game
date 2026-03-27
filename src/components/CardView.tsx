@@ -7,6 +7,7 @@ interface CardViewProps {
   onClick?: () => void;
   compact?: boolean;
   scoreStep?: { cardScore: number; bonusTriggered: boolean } | null;
+  slotNumber?: number | null;
 }
 
 /** Group an array of TokenType into { type → count } in order of first appearance */
@@ -20,7 +21,7 @@ function groupTokens(tokens: TokenType[]): { type: TokenType; count: number }[] 
   return order.map(t => ({ type: t, count: counts[t]! }));
 }
 
-export const CardView: React.FC<CardViewProps> = ({ card, selected, onClick, compact, scoreStep }) => {
+export const CardView: React.FC<CardViewProps> = ({ card, selected, onClick, compact, scoreStep, slotNumber }) => {
   const gainGroups = groupTokens(card.tokens);
   const costGroups = card.costs ? groupTokens(card.costs) : [];
 
@@ -51,7 +52,7 @@ export const CardView: React.FC<CardViewProps> = ({ card, selected, onClick, com
       {card.bonus && (
         <div className="card-bonus-row">
           <span className="card-bonus-need">
-            {TOKEN_CONFIG[card.bonus.required.type].icon}×{card.bonus.required.count}
+            If {card.bonus.required.count}{TOKEN_CONFIG[card.bonus.required.type].icon} already
           </span>
           <span className="card-bonus-arrow">→</span>
           <span className="card-bonus-reward">✨+{card.bonus.points}</span>
@@ -63,6 +64,9 @@ export const CardView: React.FC<CardViewProps> = ({ card, selected, onClick, com
           +{scoreStep.cardScore}
           {scoreStep.bonusTriggered && <span className="bonus-tag">✨</span>}
         </div>
+      )}
+      {slotNumber != null && (
+        <span className="slot-number">#{slotNumber}</span>
       )}
     </div>
   );

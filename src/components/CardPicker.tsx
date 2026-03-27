@@ -10,7 +10,7 @@ interface CardPickerProps {
 export const CardPicker: React.FC<CardPickerProps> = ({ cards, selectedId, onSelect }) => {
   return (
     <div className="card-picker">
-      <p className="picker-label">Choose a card to place:</p>
+      <p className="picker-label">Choose 1 card — the other is discarded:</p>
       <div className="picker-cards">
         {cards.map(card => (
           <CardView

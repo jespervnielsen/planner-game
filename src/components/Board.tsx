@@ -20,6 +20,13 @@ export const Board: React.FC<BoardProps> = ({ board, canPlace, onPlaceCard, scor
     }
   }
 
+  // Build a map from (day, cardIdx) to 1-based resolution number
+  const resolutionMap: Partial<Record<DayName, number[]>> = {};
+  scoringOrder.forEach(({ day, cardIdx }, flatIdx) => {
+    if (!resolutionMap[day]) resolutionMap[day] = [];
+    resolutionMap[day]![cardIdx] = flatIdx + 1;
+  });
+
   const getScoreStepsForDay = (day: DayName): (ScoreStep | null)[] => {
     if (!scoreResult) return board[day].map(() => null);
     return board[day].map((_, cardIdx) => {
@@ -41,6 +48,7 @@ export const Board: React.FC<BoardProps> = ({ board, canPlace, onPlaceCard, scor
           canPlace={canPlace && board[day].length < 3}
           onClick={() => onPlaceCard?.(day)}
           scoreSteps={getScoreStepsForDay(day)}
+          slotNumbers={resolutionMap[day] ?? []}
         />
       ))}
     </div>

@@ -17,11 +17,35 @@ function getRating(score: number): string {
   return '📝 Needs work';
 }
 
+function getRatingEmoji(score: number): string {
+  if (score >= 70) return '🏆';
+  if (score >= 55) return '⭐⭐⭐';
+  if (score >= 40) return '⭐⭐';
+  if (score >= 25) return '⭐';
+  return '📝';
+}
+
 export const ScoreScreen: React.FC<ScoreScreenProps> = ({ scoreResult, onPlayAgain, mode, seed }) => {
   const { totalScore, steps } = scoreResult;
   const finalTokens = steps.length > 0
     ? { ...steps[steps.length - 1].tokensAfter }
     : { work: 0, fitness: 0, social: 0, rest: 0 };
+
+  const bonusCount = steps.filter(s => s.bonusTriggered).length;
+  const bonusPoints = steps.reduce((sum, s) => {
+    if (!s.bonusTriggered) return sum;
+    const card = ALL_CARDS.find(c => c.id === s.cardId);
+    return sum + (card?.bonus?.points ?? 0);
+  }, 0);
+  const baseTotal = totalScore - bonusPoints;
+  const missedCount = steps.filter(s => s.bonusMissedBy !== undefined).length;
+
+  const handleShare = () => {
+    const date = mode === 'daily' ? seed : new Date().toISOString().slice(0, 10);
+    const ratingEmoji = getRatingEmoji(totalScore);
+    const text = `📅 Perfect Week – ${date} – Score: ${totalScore} ${ratingEmoji} – https://jespervnielsen.github.io/planner-game/`;
+    navigator.clipboard.writeText(text).catch(() => {});
+  };
 
   return (
     <div className="score-screen">
@@ -29,6 +53,7 @@ export const ScoreScreen: React.FC<ScoreScreenProps> = ({ scoreResult, onPlayAga
         <h2>Week Complete!</h2>
         <div className="score-total">{totalScore}</div>
         <div className="score-rating">{getRating(totalScore)}</div>
+        <div className="score-split">Base: {baseTotal} + Bonus: {bonusPoints} = {totalScore}</div>
       </div>
 
       <div className="score-tokens">
@@ -41,6 +66,10 @@ export const ScoreScreen: React.FC<ScoreScreenProps> = ({ scoreResult, onPlayAga
       </div>
 
       <div className="score-breakdown">
+        <div className="score-summary-stats">
+          <span>✨ {bonusCount} bonus{bonusCount !== 1 ? 'es' : ''} triggered (+{bonusPoints}pt)</span>
+          {missedCount > 0 && <span className="missed-stat">💔 {missedCount} missed</span>}
+        </div>
         <h3>Score Breakdown</h3>
         <div className="breakdown-list">
           {steps.map((step, i) => {
@@ -50,6 +79,9 @@ export const ScoreScreen: React.FC<ScoreScreenProps> = ({ scoreResult, onPlayAga
                 <span className="bi-title">{card.title}</span>
                 <span className="bi-score">
                   {step.bonusTriggered && <span className="bi-bonus">✨ bonus! </span>}
+                  {step.bonusMissedBy !== undefined && (
+                    <span className="bi-missed">missed ✨ ({step.bonusMissedBy} short)</span>
+                  )}
                   +{step.cardScore}
                 </span>
               </div>
@@ -60,8 +92,11 @@ export const ScoreScreen: React.FC<ScoreScreenProps> = ({ scoreResult, onPlayAga
       </div>
 
       <div className="score-actions">
+        <button className="btn-share" onClick={handleShare}>
+          📋 Copy Result
+        </button>
         <button className="btn-primary" onClick={onPlayAgain}>
-          Play Again (New Game)
+          {mode === 'daily' ? 'Play Random Game' : 'Play Again (New Game)'}
         </button>
         {mode === 'daily' && (
           <p className="score-daily-note">Come back tomorrow for a new daily puzzle!</p>

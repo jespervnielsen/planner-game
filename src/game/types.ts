@@ -26,6 +26,8 @@ export type ScoreStep = {
   cardScore: number;
   bonusTriggered: boolean;
   tokensAfter: TokenState;
+  tokensBefore: TokenState;
+  bonusMissedBy?: number;
 };
 
 export type ScoreResult = {
