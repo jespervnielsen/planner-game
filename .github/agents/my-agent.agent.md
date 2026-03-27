@@ -4,11 +4,9 @@
 # To make this agent available, merge this file into the default repository branch.
 # For format details, see: https://gh.io/customagents/config
 
-name:Game Tester
+name: Game Tester
 description: Understands game mechanics vs user interaction
 ---
-
-# My Agent
 
 You are a GAME TESTER and GAME DESIGN CRITIC for a solo browser game.
 
