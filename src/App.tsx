@@ -37,7 +37,7 @@ function getThresholds(
 }
 
 function App() {
-  const { state, selectCard, placeCard, restartGame } = useGameState();
+  const { state, selectCard, placeCard, restartGame, skipScoring } = useGameState();
 
   const currentTokens: TokenState = (() => {
     if (state.phase === 'scoring' && state.scoreResult) {
@@ -80,8 +80,24 @@ function App() {
 
       <TokenLane tokens={currentTokens} thresholds={thresholds} />
 
+      <details className="how-to-play">
+        <summary>📖 How to Play</summary>
+        <div className="how-to-play-body">
+          <ul>
+            <li>Pick 1 of 2 cards each turn — the other is <strong>discarded</strong>.</li>
+            <li>Place it in any day (Mon → Sat). Each day holds up to 3 cards.</li>
+            <li>Cards resolve <strong>Mon → Sat</strong>, top slot first. Earlier = resolves sooner.</li>
+            <li>Bonus fires if you've already earned enough tokens from <strong>cards that resolved before it</strong>.</li>
+            <li>Goal: chain your cards so bonuses trigger for maximum points!</li>
+          </ul>
+        </div>
+      </details>
+
       {state.phase === 'scoring' && (
-        <div className="scoring-banner">⏳ Calculating score…</div>
+        <div className="scoring-bar">
+          <span className="scoring-banner">⏳ Calculating score…</span>
+          <button className="btn-skip" onClick={skipScoring}>Skip »</button>
+        </div>
       )}
 
       <main className="app-main">

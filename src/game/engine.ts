@@ -99,12 +99,16 @@ export function calculateScore(board: Board, allCards: Card[]): ScoreResult {
       const card = allCards.find(c => c.id === cardId)!;
       let cardScore = 0;
       let bonusTriggered = false;
+      const tokensBefore: TokenState = { ...tokens };
+      let bonusMissedBy: number | undefined;
 
       if (card.bonus) {
         const { type, count } = card.bonus.required;
         if (tokens[type] >= count) {
           cardScore += card.bonus.points;
           bonusTriggered = true;
+        } else {
+          bonusMissedBy = count - tokens[type];
         }
       }
 
@@ -121,7 +125,7 @@ export function calculateScore(board: Board, allCards: Card[]): ScoreResult {
       }
 
       totalScore += cardScore;
-      steps.push({ cardId, cardScore, bonusTriggered, tokensAfter: { ...tokens } });
+      steps.push({ cardId, cardScore, bonusTriggered, tokensAfter: { ...tokens }, tokensBefore, bonusMissedBy });
     }
   }
 

@@ -14,7 +14,7 @@ export const ALL_CARDS: Card[] = [
     basePoints: 1, tokens: ['work', 'work', 'work'], costs: ['rest'],
     bonus: { required: { type: 'work', count: 4 }, points: 6 } },
   { id: 'work-5', title: 'Crunch Mode',
-    basePoints: 0, tokens: ['work', 'work'], costs: ['rest', 'rest'],
+    basePoints: 0, tokens: ['work', 'work'], costs: ['rest'],
     bonus: { required: { type: 'work', count: 5 }, points: 9 } },
 
   // FITNESS cards — intense training costs rest
@@ -46,8 +46,8 @@ export const ALL_CARDS: Card[] = [
     basePoints: 1, tokens: ['social', 'social', 'social'],
     bonus: { required: { type: 'social', count: 4 }, points: 6 } },
   { id: 'soc-5', title: 'Party Night',
-    basePoints: 0, tokens: ['social', 'social'], costs: ['work', 'rest'],
-    bonus: { required: { type: 'social', count: 5 }, points: 9 } },
+    basePoints: 0, tokens: ['social', 'social'], costs: ['work'],
+    bonus: { required: { type: 'social', count: 4 }, points: 9 } },
 
   // REST cards — pure recovery, no costs
   { id: 'rest-1', title: 'Sleep In',
@@ -80,6 +80,6 @@ export const ALL_CARDS: Card[] = [
     bonus: { required: { type: 'fitness', count: 3 }, points: 4 } },
   { id: 'bal-5', title: 'Volunteering',
     basePoints: 1, tokens: ['social', 'work', 'fitness'],
-    bonus: { required: { type: 'social', count: 3 }, points: 7 } },
+    bonus: { required: { type: 'social', count: 3 }, points: 5 } },
 ];
 
