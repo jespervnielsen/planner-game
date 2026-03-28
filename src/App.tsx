@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useGameState } from './hooks/useGameState';
 import { TokenLane } from './components/TokenLane';
 import { Board } from './components/Board';
@@ -13,31 +14,24 @@ const EMPTY_TOKENS: TokenState = { work: 0, fitness: 0, social: 0, rest: 0 };
 function getThresholds(
   phase: string,
   selectedCard: string | null,
-  hand: [string, string] | null,
 ): Partial<Record<TokenType, number>> {
-  const relevantIds: string[] = [];
-  if (phase === 'placing' && selectedCard) {
-    relevantIds.push(selectedCard);
-  } else if (phase === 'picking' && hand) {
-    relevantIds.push(...hand);
-  }
+  // Only show thresholds for the selected card (placing phase).
+  // Showing thresholds for both cards in hand is misleading — the discarded
+  // card's threshold would show even after it's gone.
+  if (phase !== 'placing' || !selectedCard) return {};
 
   const result: Partial<Record<TokenType, number>> = {};
-  for (const id of relevantIds) {
-    const card = ALL_CARDS.find((c: Card) => c.id === id);
-    if (card?.bonus) {
-      const { type, count } = card.bonus.required;
-      const existing = result[type];
-      if (existing === undefined || count < existing) {
-        result[type] = count;
-      }
-    }
+  const card = ALL_CARDS.find((c: Card) => c.id === selectedCard);
+  if (card?.bonus) {
+    const { type, count } = card.bonus.required;
+    result[type] = count;
   }
   return result;
 }
 
 function App() {
-  const { state, selectCard, placeCard, restartGame, skipScoring } = useGameState();
+  const { state, selectCard, placeCard, restartGame, skipScoring, advanceScoreStep } = useGameState();
+  const [showHelp, setShowHelp] = useState(false);
 
   const currentTokens: TokenState = (() => {
     if (state.phase === 'scoring' && state.scoreResult) {
@@ -54,7 +48,7 @@ function App() {
     return computeBoardTokens(state.board, ALL_CARDS);
   })();
 
-  const thresholds = getThresholds(state.phase, state.selectedCard, state.hand);
+  const thresholds = getThresholds(state.phase, state.selectedCard);
 
   const handCards: [Card, Card] | null =
     state.hand
@@ -75,32 +69,57 @@ function App() {
           {state.phase !== 'done' && state.phase !== 'scoring' && (
             <span className="app-progress">{progress}</span>
           )}
+          <button
+            className="help-btn"
+            onClick={() => setShowHelp(h => !h)}
+            aria-label="How to play"
+            aria-expanded={showHelp}
+          >?</button>
         </div>
       </header>
 
-      <TokenLane tokens={currentTokens} thresholds={thresholds} />
-
-      <details className="how-to-play">
-        <summary>📖 How to Play</summary>
-        <div className="how-to-play-body">
-          <ul>
-            <li>Pick 1 of 2 cards each turn — the other is <strong>discarded</strong>.</li>
-            <li>Place it in any day (Mon → Sat). Each day holds up to 3 cards.</li>
-            <li>Cards resolve <strong>Mon → Sat</strong>, top slot first. Earlier = resolves sooner.</li>
-            <li>Bonus fires if you've already earned enough tokens from <strong>cards that resolved before it</strong>.</li>
-            <li>Goal: chain your cards so bonuses trigger for maximum points!</li>
-          </ul>
+      {showHelp && (
+        <div className="help-overlay" onClick={() => setShowHelp(false)}>
+          <div className="help-panel" onClick={e => e.stopPropagation()}>
+            <button className="help-close" onClick={() => setShowHelp(false)}>✕</button>
+            <h3>📖 How to Play</h3>
+            <ul>
+              <li>Pick 1 of 2 cards each turn — the other is <strong>discarded</strong>.</li>
+              <li>Place it in any day (Mon → Sat). Each day holds up to 3 cards.</li>
+              <li>Cards resolve <strong>Mon → Sat</strong>, top slot first. Earlier = resolves sooner.</li>
+              <li>Bonus fires if you've already earned enough tokens from <strong>cards that resolved before it</strong>.</li>
+              <li>Fill 3 cards of the same or all-different categories on a day to earn <strong>Day Harmony</strong> bonus points.</li>
+              <li>End the week with 3+ tokens of each type to earn a <strong>Diversity Bonus</strong>.</li>
+              <li>Complete your <strong>Weekly Goal</strong> for a big bonus!</li>
+              <li>Goal: chain your cards so bonuses trigger for maximum points!</li>
+            </ul>
+          </div>
         </div>
-      </details>
+      )}
+
+      {/* Weekly Goal banner */}
+      {state.phase !== 'done' && (
+        <div className="weekly-goal-bar">
+          <span className="weekly-goal-label">🎯 Goal:</span>
+          <span className="weekly-goal-title">{state.weeklyGoal.title}</span>
+          <span className="weekly-goal-desc">{state.weeklyGoal.description}</span>
+          <span className="weekly-goal-reward">+{state.weeklyGoal.bonusPoints}pt</span>
+        </div>
+      )}
+
+      <TokenLane tokens={currentTokens} thresholds={thresholds} />
 
       {state.phase === 'scoring' && (
         <div className="scoring-bar">
-          <span className="scoring-banner">⏳ Calculating score…</span>
+          <span className="scoring-banner">⏳ Calculating score… <span className="scoring-hint">click board to advance</span></span>
           <button className="btn-skip" onClick={skipScoring}>Skip »</button>
         </div>
       )}
 
-      <main className="app-main">
+      <main
+        className={`app-main${state.phase === 'scoring' ? ' scoring-clickable' : ''}`}
+        onClick={state.phase === 'scoring' ? advanceScoreStep : undefined}
+      >
         <Board
           board={state.board}
           canPlace={state.phase === 'placing'}
@@ -127,6 +146,7 @@ function App() {
             onPlayAgain={restartGame}
             mode={state.mode}
             seed={state.seed}
+            weeklyGoal={state.weeklyGoal}
           />
         </div>
       )}
