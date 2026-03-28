@@ -12,12 +12,12 @@ interface CardViewProps {
   isActiveStep?: boolean;
 }
 
-/** Accent colour keyed by card id prefix, mirroring the token colour palette. */
+/** Accent color keyed by card id prefix, mirroring the token color palette. */
 const CATEGORY_COLORS: Record<string, string> = {
-  'work-': '#3B82F6',  // blue  – matches --work token colour
-  'fit-':  '#22C55E',  // green – matches --fitness token colour
-  'soc-':  '#A855F7',  // purple – matches --social token colour
-  'rest-': '#F59E0B',  // amber – matches --rest token colour
+  'work-': '#3B82F6',  // blue  – matches --work token color
+  'fit-':  '#22C55E',  // green – matches --fitness token color
+  'soc-':  '#A855F7',  // purple – matches --social token color
+  'rest-': '#F59E0B',  // amber – matches --rest token color
   'bal-':  '#06B6D4',  // cyan  – balanced / neutral
 };
 const DEFAULT_CATEGORY_COLOR = '#94A3B8'; // slate fallback
@@ -58,7 +58,7 @@ export const CardView: React.FC<CardViewProps> = ({ card, selected, onClick, com
       onClick={onClick}
       style={{ '--card-accent': categoryColor } as React.CSSProperties}
     >
-      {/* Coloured top accent stripe */}
+      {/* Colored top accent stripe */}
       <div className="card-accent-bar" />
 
       <div className="card-title">{card.title}</div>
