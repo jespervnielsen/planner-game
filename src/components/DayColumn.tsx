@@ -1,3 +1,4 @@
+import React, { useRef } from 'react';
 import { DayName, Card, ScoreStep } from '../game/types';
 import { CardView } from './CardView';
 
@@ -8,6 +9,7 @@ interface DayColumnProps {
   canPlace?: boolean;
   onClick?: () => void;
   scoreSteps?: (ScoreStep | null)[];
+  activeSteps?: boolean[];
   slotNumbers?: number[];
   bonusFeasibility?: 'will-trigger' | 'wont-trigger';
 }
@@ -17,10 +19,25 @@ const DAY_LABELS: Record<DayName, string> = {
   thursday: 'Thu', friday: 'Fri', saturday: 'Sat',
 };
 
-export const DayColumn: React.FC<DayColumnProps> = ({ day, cards, isTarget, canPlace, onClick, scoreSteps, slotNumbers, bonusFeasibility }) => {
+export const DayColumn: React.FC<DayColumnProps> = ({ day, cards, isTarget, canPlace, onClick, scoreSteps, activeSteps, slotNumbers, bonusFeasibility }) => {
+  const prevLengthRef = useRef(cards.length);
+  const [justPlacedIdx, setJustPlacedIdx] = React.useState(-1);
+
+  React.useEffect(() => {
+    if (cards.length > prevLengthRef.current) {
+      const newIdx = cards.length - 1;
+      setJustPlacedIdx(newIdx);
+      const timer = setTimeout(() => setJustPlacedIdx(-1), 300);
+      prevLengthRef.current = cards.length;
+      return () => clearTimeout(timer);
+    }
+    prevLengthRef.current = cards.length;
+  }, [cards.length]);
+
+  const isFull = cards.length >= 3;
   return (
     <div
-      className={`day-column${isTarget ? ' target' : ''}${canPlace ? ' can-place' : ''}`}
+      className={`day-column${isTarget ? ' target' : ''}${canPlace ? ' can-place' : ''}${isFull ? ' day-column--full' : ''}`}
       onClick={canPlace ? onClick : undefined}
     >
       <div className="day-header">
@@ -37,7 +54,9 @@ export const DayColumn: React.FC<DayColumnProps> = ({ day, cards, isTarget, canP
             key={card.id}
             card={card}
             compact
+            isNew={i === justPlacedIdx}
             scoreStep={scoreSteps ? scoreSteps[i] : null}
+            isActiveStep={activeSteps ? activeSteps[i] : false}
             slotNumber={slotNumbers ? slotNumbers[i] : null}
           />
         ))}

@@ -26,8 +26,14 @@ function getRatingEmoji(score: number): string {
   return '📝';
 }
 
+const DAY_ABBR: Record<string, string> = {
+  monday: 'Mon', tuesday: 'Tue', wednesday: 'Wed',
+  thursday: 'Thu', friday: 'Fri', saturday: 'Sat',
+};
+
 export const ScoreScreen: React.FC<ScoreScreenProps> = ({ scoreResult, onPlayAgain, mode, seed }) => {
   const { totalScore, steps } = scoreResult;
+
   const finalTokens = steps.length > 0
     ? { ...steps[steps.length - 1].tokensAfter }
     : { work: 0, fitness: 0, social: 0, rest: 0 };
@@ -108,6 +114,7 @@ export const ScoreScreen: React.FC<ScoreScreenProps> = ({ scoreResult, onPlayAga
             const card = ALL_CARDS.find(c => c.id === step.cardId)!;
             return (
               <div key={i} className={`breakdown-item${step.bonusTriggered ? ' has-bonus' : ''}`}>
+                <span className="bi-day">{DAY_ABBR[step.dayName] ?? step.dayName}</span>
                 <span className="bi-title">{card.title}</span>
                 <span className="bi-score">
                   {step.bonusTriggered && <span className="bi-bonus">✨ bonus! </span>}
@@ -124,11 +131,11 @@ export const ScoreScreen: React.FC<ScoreScreenProps> = ({ scoreResult, onPlayAga
       </div>
 
       <div className="score-actions">
-        <button className="btn-share" onClick={handleShare}>
-          📋 Copy Result
-        </button>
         <button className="btn-primary" onClick={onPlayAgain}>
           {mode === 'daily' ? 'Play Random Game' : 'Play Again (New Game)'}
+        </button>
+        <button className="btn-share" onClick={handleShare}>
+          📋 Copy Result
         </button>
         {mode === 'daily' && (
           <p className="score-daily-note">Come back tomorrow for a new daily puzzle!</p>

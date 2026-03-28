@@ -38,6 +38,13 @@ export const Board: React.FC<BoardProps> = ({ board, canPlace, onPlaceCard, scor
     });
   };
 
+  const getActiveStepsForDay = (day: DayName): boolean[] => {
+    return board[day].map((_, cardIdx) => {
+      const flatIdx = scoringOrder.findIndex(s => s.day === day && s.cardIdx === cardIdx);
+      return scoreAnimStep !== undefined && flatIdx === scoreAnimStep;
+    });
+  };
+
   return (
     <div className="board">
       {DAYS.map(day => (
@@ -48,6 +55,7 @@ export const Board: React.FC<BoardProps> = ({ board, canPlace, onPlaceCard, scor
           canPlace={canPlace && board[day].length < 3}
           onClick={() => onPlaceCard?.(day)}
           scoreSteps={getScoreStepsForDay(day)}
+          activeSteps={getActiveStepsForDay(day)}
           slotNumbers={resolutionMap[day] ?? []}
           bonusFeasibility={bonusFeasibilityByDay?.[day]}
         />
