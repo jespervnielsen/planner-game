@@ -12,13 +12,21 @@ interface CardViewProps {
   isActiveStep?: boolean;
 }
 
+/** Accent colour keyed by card id prefix, mirroring the token colour palette. */
+const CATEGORY_COLORS: Record<string, string> = {
+  'work-': '#3B82F6',  // blue  – matches --work token colour
+  'fit-':  '#22C55E',  // green – matches --fitness token colour
+  'soc-':  '#A855F7',  // purple – matches --social token colour
+  'rest-': '#F59E0B',  // amber – matches --rest token colour
+  'bal-':  '#06B6D4',  // cyan  – balanced / neutral
+};
+const DEFAULT_CATEGORY_COLOR = '#94A3B8'; // slate fallback
+
 function getCategoryColor(cardId: string): string {
-  if (cardId.startsWith('work-')) return '#3B82F6';
-  if (cardId.startsWith('fit-'))  return '#22C55E';
-  if (cardId.startsWith('soc-'))  return '#A855F7';
-  if (cardId.startsWith('rest-')) return '#F59E0B';
-  if (cardId.startsWith('bal-'))  return '#06B6D4';
-  return '#94A3B8';
+  for (const prefix of Object.keys(CATEGORY_COLORS)) {
+    if (cardId.startsWith(prefix)) return CATEGORY_COLORS[prefix];
+  }
+  return DEFAULT_CATEGORY_COLOR;
 }
 
 /** Group an array of TokenType into { type → count } in order of first appearance */
