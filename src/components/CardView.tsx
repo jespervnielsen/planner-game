@@ -12,6 +12,15 @@ interface CardViewProps {
   isActiveStep?: boolean;
 }
 
+function getCategoryColor(cardId: string): string {
+  if (cardId.startsWith('work-')) return '#3B82F6';
+  if (cardId.startsWith('fit-'))  return '#22C55E';
+  if (cardId.startsWith('soc-'))  return '#A855F7';
+  if (cardId.startsWith('rest-')) return '#F59E0B';
+  if (cardId.startsWith('bal-'))  return '#06B6D4';
+  return '#94A3B8';
+}
+
 /** Group an array of TokenType into { type → count } in order of first appearance */
 function groupTokens(tokens: TokenType[]): { type: TokenType; count: number }[] {
   const order: TokenType[] = [];
@@ -33,12 +42,17 @@ function getOrdinalSuffix(n: number): string {
 export const CardView: React.FC<CardViewProps> = ({ card, selected, onClick, compact, scoreStep, slotNumber, isNew, isActiveStep }) => {
   const gainGroups = groupTokens(card.tokens);
   const costGroups = card.costs ? groupTokens(card.costs) : [];
+  const categoryColor = getCategoryColor(card.id);
 
   return (
     <div
       className={`card-view${selected ? ' selected' : ''}${onClick ? ' clickable' : ''}${compact ? ' compact' : ''}${isNew ? ' just-placed' : ''}`}
       onClick={onClick}
+      style={{ '--card-accent': categoryColor } as React.CSSProperties}
     >
+      {/* Coloured top accent stripe */}
+      <div className="card-accent-bar" />
+
       <div className="card-title">{card.title}</div>
 
       <div className="card-tokens">
@@ -55,13 +69,13 @@ export const CardView: React.FC<CardViewProps> = ({ card, selected, onClick, com
       </div>
 
       <div className="card-points-row">
-        <span className="card-base-points">{card.basePoints}pt</span>
+        <span className="card-base-points">{card.basePoints}<span className="card-base-points-unit">pt</span></span>
       </div>
 
       {card.bonus && (
         <div className="card-bonus-row">
           <span className="card-bonus-need">
-            Needs {card.bonus.required.count}{TOKEN_CONFIG[card.bonus.required.type].icon} before it
+            {card.bonus.required.count}{TOKEN_CONFIG[card.bonus.required.type].icon} before
           </span>
           <span className="card-bonus-arrow">→</span>
           <span className="card-bonus-reward">✨+{card.bonus.points}</span>

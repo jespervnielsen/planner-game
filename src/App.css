@@ -227,132 +227,218 @@ body {
 
 /* ── Card View ── */
 .card-view {
-  background: var(--surface2);
-  border: 2px solid var(--border);
+  background:
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--card-accent, #94A3B8) 8%, transparent) 0%,
+      transparent 55%
+    ),
+    var(--surface2);
+  border: 1.5px solid color-mix(in srgb, var(--card-accent, #94A3B8) 30%, var(--border));
   border-radius: var(--radius-sm);
-  padding: 8px 8px 6px;
+  padding: 0 8px 7px;          /* top-padding removed – accent bar carries the top space */
   position: relative;
-  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+  overflow: hidden;
+  transition: border-color 0.18s, transform 0.18s, box-shadow 0.18s, background 0.18s;
 }
 
+/* ── Accent stripe ── */
+.card-accent-bar {
+  height: 3px;
+  margin: 0 -8px 7px;          /* bleed to card edges */
+  background: var(--card-accent, #94A3B8);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  opacity: 0.9;
+}
+.card-view.compact .card-accent-bar {
+  height: 2px;
+  margin-bottom: 5px;
+}
+
+/* ── Hover – lift + accent glow ── */
 .card-view.clickable { cursor: pointer; }
 .card-view.clickable:hover {
-  border-color: var(--accent);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
-}
-.card-view.selected {
-  border-color: var(--accent-hover);
-  box-shadow: 0 0 0 3px rgba(129,140,248,0.35);
-  background: #2d3b5a;
-}
-.card-view.compact {
-  padding: 5px 6px 4px;
+  border-color: color-mix(in srgb, var(--card-accent, #94A3B8) 70%, transparent);
+  transform: translateY(-3px);
+  box-shadow:
+    0 6px 20px rgba(0,0,0,0.45),
+    0 0 0 1px color-mix(in srgb, var(--card-accent, #94A3B8) 35%, transparent),
+    0 0 12px color-mix(in srgb, var(--card-accent, #94A3B8) 25%, transparent);
 }
 
+/* ── Selected state ── */
+.card-view.selected {
+  border-color: var(--card-accent, var(--accent-hover));
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--card-accent, #818cf8) 45%, transparent),
+    0 0 18px color-mix(in srgb, var(--card-accent, #818cf8) 30%, transparent);
+  background:
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--card-accent, #94A3B8) 14%, transparent) 0%,
+      transparent 55%
+    ),
+    #2a3650;
+}
+
+/* ── Compact adjustments ── */
+.card-view.compact { padding: 0 6px 5px; }
+
+/* ── Title ── */
 .card-title {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  margin-bottom: 4px;
+  margin-bottom: 5px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  letter-spacing: 0.01em;
+  color: var(--text);
 }
-.card-view:not(.compact) .card-title { font-size: 0.95rem; }
+.card-view:not(.compact) .card-title {
+  font-size: 0.93rem;
+  margin-bottom: 6px;
+}
 
+/* ── Token badges ── */
 .card-tokens {
   display: flex;
-  gap: 3px;
+  gap: 4px;
   flex-wrap: wrap;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 .card-token-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
   font-size: 0.65rem;
-  border-radius: 4px;
-  padding: 1px 4px;
+  font-weight: 700;
+  border-radius: 99px;         /* fully rounded pill */
+  padding: 2px 6px;
   color: #fff;
+  letter-spacing: 0.02em;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.35);
 }
-.card-view:not(.compact) .card-token-badge { font-size: 0.8rem; padding: 2px 6px; }
+.card-view:not(.compact) .card-token-badge {
+  font-size: 0.78rem;
+  padding: 3px 8px;
+}
 
-/* Cost badge: outlined, no fill */
+/* Cost badge – outlined pill */
 .card-token-badge.cost {
   background: transparent;
-  border: 1px solid;
-  font-weight: 700;
+  border: 1.5px solid;
+  font-weight: 800;
+  box-shadow: none;
 }
 
+/* ── Points display ── */
 .card-points-row {
   display: flex;
   align-items: center;
   gap: 6px;
+  margin-bottom: 1px;
 }
 .card-base-points {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--text-muted);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 1px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+  /* subtle circular backing */
+  background: color-mix(in srgb, var(--card-accent, #94A3B8) 15%, transparent);
+  border-radius: 6px;
+  padding: 2px 7px 2px 5px;
+  letter-spacing: -0.5px;
 }
-.card-view:not(.compact) .card-base-points { font-size: 0.9rem; }
+.card-base-points-unit {
+  font-size: 0.6em;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0;
+}
+.card-view.compact .card-base-points {
+  font-size: 0.9rem;
+  padding: 1px 5px 1px 4px;
+}
 
-/* Bonus requirement row */
+/* ── Bonus row ── */
 .card-bonus-row {
   display: flex;
   align-items: center;
-  gap: 3px;
-  margin-top: 3px;
+  gap: 4px;
+  margin-top: 5px;
+  padding: 4px 6px;
   font-size: 0.7rem;
   font-weight: 700;
+  background: rgba(251, 191, 36, 0.08);
+  border-left: 2px solid rgba(251, 191, 36, 0.6);
+  border-radius: 0 4px 4px 0;
 }
-.card-view:not(.compact) .card-bonus-row { font-size: 0.82rem; }
+.card-view:not(.compact) .card-bonus-row {
+  font-size: 0.8rem;
+  padding: 5px 7px;
+  margin-top: 6px;
+}
+.card-view.compact .card-bonus-row {
+  padding: 3px 5px;
+  margin-top: 4px;
+}
 .card-bonus-need {
-  background: rgba(251, 191, 36, 0.15);
-  border: 1px solid rgba(251, 191, 36, 0.45);
-  border-radius: 4px;
-  padding: 1px 4px;
   color: #fbbf24;
+  white-space: nowrap;
 }
 .card-bonus-arrow {
   color: var(--text-muted);
   font-size: 0.65rem;
+  flex-shrink: 0;
 }
 .card-bonus-reward {
-  color: #fbbf24;
+  color: #fde68a;
+  font-weight: 800;
+  margin-left: auto;          /* push reward to the right */
 }
 
-/* Score overlay on card */
+/* ── Score overlay ── */
 .card-score-overlay {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(15,23,42,0.75);
+  background: rgba(15,23,42,0.80);
   border-radius: var(--radius-sm);
-  font-size: 1.1rem;
-  font-weight: 800;
+  font-size: 1.2rem;
+  font-weight: 900;
   color: #fff;
+  letter-spacing: -0.5px;
   animation: scorePopIn 0.3s ease;
+  backdrop-filter: blur(2px);
 }
-.card-score-overlay.bonus { color: #fbbf24; }
+.card-score-overlay.bonus { color: #fde68a; }
 .card-score-overlay.active-step {
-  background: rgba(99, 102, 241, 0.25);
+  background: rgba(99, 102, 241, 0.22);
   border: 2px solid var(--accent);
-  box-shadow: 0 0 16px rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.55);
 }
-.bonus-tag { margin-left: 4px; font-size: 0.9rem; }
+.bonus-tag { margin-left: 5px; font-size: 1rem; }
 
+/* ── Animations ── */
 @keyframes scorePopIn {
-  from { opacity: 0; transform: scale(0.6); }
-  to { opacity: 1; transform: scale(1); }
+  from { opacity: 0; transform: scale(0.55); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 @keyframes cardLand {
-  0%   { opacity: 0; transform: translateY(-12px) scale(0.92); }
-  60%  { transform: translateY(2px) scale(1.02); }
+  0%   { opacity: 0; transform: translateY(-14px) scale(0.91); }
+  65%  { transform: translateY(2px) scale(1.03); }
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .card-view.just-placed {
-  animation: cardLand 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation: cardLand 0.24s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 @keyframes scoreLand {
