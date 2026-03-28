@@ -28,6 +28,7 @@ export type ScoreStep = {
   tokensAfter: TokenState;
   tokensBefore: TokenState;
   bonusMissedBy?: number;
+  dayName: string;
 };
 
 export type ScoreResult = {
