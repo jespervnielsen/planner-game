@@ -18,6 +18,10 @@ function parseUrlParams(): { mode: 'daily' | 'random'; seed: string } {
   return { mode: 'daily', seed: getTodaySeed() };
 }
 
+// Slower auto-advance gives players time to read each step;
+// they can always click the board to advance immediately.
+const SCORE_AUTO_ADVANCE_MS = 1200;
+
 export function useGameState() {
   const [state, setState] = useState<GameState>(() => {
     const { mode, seed } = parseUrlParams();
@@ -40,7 +44,7 @@ export function useGameState() {
 
     const timer = setTimeout(() => {
       setState(prev => advanceScoreAnimation(prev));
-    }, 400);
+    }, SCORE_AUTO_ADVANCE_MS);
 
     return () => clearTimeout(timer);
   }, [state.phase, state.scoreAnimStep, state.scoreResult]);
@@ -71,5 +75,13 @@ export function useGameState() {
     });
   }, []);
 
-  return { state, selectCard, placeCard, restartGame, skipScoring };
+  // Click-to-advance: immediately step forward one card during scoring
+  const advanceScoreStep = useCallback(() => {
+    setState(prev => {
+      if (prev.phase !== 'scoring' || !prev.scoreResult) return prev;
+      return advanceScoreAnimation(prev);
+    });
+  }, []);
+
+  return { state, selectCard, placeCard, restartGame, skipScoring, advanceScoreStep };
 }

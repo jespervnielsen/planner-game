@@ -52,6 +52,7 @@ export const Board: React.FC<BoardProps> = ({ board, canPlace, onPlaceCard, scor
           day={day}
           cards={board[day].map(id => ALL_CARDS.find(c => c.id === id)!)}
           canPlace={canPlace && board[day].length < 3}
+          isInPlacingPhase={canPlace}
           onClick={() => onPlaceCard?.(day)}
           scoreSteps={getScoreStepsForDay(day)}
           activeSteps={getActiveStepsForDay(day)}

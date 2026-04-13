@@ -1,8 +1,11 @@
 export type TokenType = 'work' | 'fitness' | 'social' | 'rest';
 
+export type CardCategory = 'work' | 'fitness' | 'social' | 'rest' | 'balanced';
+
 export type Card = {
   id: string;
   title: string;
+  category: CardCategory;
   basePoints: number;
   tokens: TokenType[];
   costs?: TokenType[];
@@ -31,9 +34,38 @@ export type ScoreStep = {
   dayName: string;
 };
 
+export type HarmonyType = 'mono' | 'trio' | 'mixed' | 'incomplete';
+
+export type DayHarmonyResult = {
+  dayName: DayName;
+  harmonyType: HarmonyType;
+  bonusPoints: number;
+  categories: CardCategory[];
+};
+
+export type DiversityResult = {
+  finalTokens: TokenState;
+  qualifyingTypes: TokenType[];
+  perTypeBonusPoints: number;
+  perfectBalanceBonus: number;
+  diversityTotal: number;
+};
+
+export type WeeklyGoal = {
+  id: string;
+  title: string;
+  description: string;
+  bonusPoints: number;
+};
+
 export type ScoreResult = {
   totalScore: number;
   steps: ScoreStep[];
+  dayHarmony: DayHarmonyResult[];
+  harmonyTotal: number;
+  diversityResult: DiversityResult;
+  weeklyGoalAchieved: boolean;
+  weeklyGoalBonus: number;
 };
 
 export type GamePhase = 'picking' | 'placing' | 'scoring' | 'done';
@@ -51,4 +83,5 @@ export type GameState = {
   mode: 'daily' | 'random';
   shuffledDeck: string[];
   nextCardIndex: number;
+  weeklyGoal: WeeklyGoal;
 };
